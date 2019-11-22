@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Localization;
@@ -39,6 +40,8 @@ namespace App.Pages
             // Now the binded minDate and maxDate are not correct
             //     minDate = 2019-07-11 
             //     maxDate = default
+            Debug.Assert(minDate == new DateTime(2019,11,07));    // fail
+            Debug.Assert(maxDate == new DateTime(2019,11,29));    // fail
 
             //------------------------------------------------------
             // parse from the querystring manually
@@ -51,6 +54,8 @@ namespace App.Pages
 
             var maxStr = HttpContext.Request.Query[nameof(maxDate)].First();  
             var maxDateValue = (DateTime) converter.ConvertFrom(null, requestCulture.Culture, maxStr);  // different 
+            Debug.Assert(minDateValue == new DateTime(2019,11,07));    // true 
+            Debug.Assert(maxDateValue == new DateTime(2019,11,29));    // true
         }
         // the form payload is :
         // minDate=07%2F11%2F2019&maxDate=29%2F11%2F2019
@@ -59,6 +64,8 @@ namespace App.Pages
             // it's fine 
             //     minDate = 2019-11-07
             //     maxDate = 2019-11-29
+            Debug.Assert(minDate == new DateTime(2019,11,07));
+            Debug.Assert(maxDate == new DateTime(2019,11,29));
         }
 
     }
