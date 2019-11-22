@@ -1,0 +1,33 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div>
+    Test FromQuery:
+    <div>
+        <a href="?handler=TestQuery&minDate=07%2F11%2F2019&maxDate=29%2F11%2F2019" target="_blank">minDate=07/11/2019&maxDate=29/11/2019</a>
+    </div>
+</div>
+
+
+<div>
+Test FromForm:
+<form method="post"  >
+    <div>
+        <p>
+            <label asp-for="MinDate" />
+            <input name="minDate" asp-for="MinDate" type="datetime" />
+            <label asp-for="MaxDate" />
+            <input name="maxDate" asp-for="MaxDate" type="datetime" />
+            <button class="btn btn-primary" >Test FormForm</button>
+        </p>
+    </div>
+</form>
+</div>
