@@ -7,12 +7,41 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace App
 {
+
+    #region snippet1
+    public class CulturedQueryStringValueProviderFactory : IValueProviderFactory
+    {
+        /// <inheritdoc />
+        public Task CreateValueProviderAsync(ValueProviderFactoryContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var query = context.ActionContext.HttpContext.Request.Query;
+            if (query != null && query.Count > 0)
+            {
+                var valueProvider = new QueryStringValueProvider(
+                    BindingSource.Query,
+                    query,
+                    CultureInfo.CurrentCulture);
+
+                context.ValueProviders.Add(valueProvider);
+            }
+
+            return Task.CompletedTask;
+        }
+    }
+    #endregion
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -25,7 +54,13 @@ namespace App
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
+            services.AddControllersWithViews(options =>{
+                var index = options.ValueProviderFactories.IndexOf(
+                options.ValueProviderFactories.OfType<QueryStringValueProviderFactory>().Single());
+                options.ValueProviderFactories[index] = new CulturedQueryStringValueProviderFactory();
+            });
+            services.AddRazorPages(opts=>{
+            });
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 // we use en-GB because it's date format is dd/mm/yyyy
